@@ -1,0 +1,51 @@
+# Main configuration file for the ItemStacker plugin.
+# Use this file to customize messages, permissions, and stacking behavior.
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Permissions:
+#   itemstacker.adm
+#       • Allows execution of the command /itemstacker
+#       • Gives access to /itemstacker help and /itemstacker reload
+# ───────────────────────────────────────────────────────────────────────────────
+
+Config:
+
+    # ───────────────────────────────────────────────────────────────────
+    # Plugin Tag / Prefix
+    #   • This prefix will be added at the beginning of all plugin messages.
+    #   • Color codes using '&' are supported (e.g., &6, &c, &a, etc.)
+    # ───────────────────────────────────────────────────────────────────
+    tag: "&6[ItemStacker]"
+
+    # ───────────────────────────────────────────────────────────────────
+    # Blacklist (Items that CANNOT be stacked by the plugin)
+    #
+    #   ✦ You can define items in two different formats:
+    #
+    #   1) Legacy Versions (Minecraft 1.12 and below):
+    #        Use numeric ID and data value, separated by '>'
+    #        Example: 276>0
+    #                 35>14  (Red Wool)
+    #
+    #   2) Modern Versions (1.13+):
+    #        Use the material name directly.
+    #        Example: diamond_sword
+    #                 red_wool
+    #
+    #   ✦ The plugin automatically detects the server version.
+    #     - In 1.8 - 1.12: It will read both numeric and material names.
+    #     - In 1.13+: Numeric IDs are removed by Minecraft, so only names work.
+    #
+    #   ✦ Any item listed here will NOT stack automatically.
+    # ───────────────────────────────────────────────────────────────────
+    blacklist:
+      - "276>0"          # Legacy example: Diamond Sword (ID 276, data 0)
+      - "diamond_sword"  # Modern example: Diamond Sword
+
+    # ───────────────────────────────────────────────────────────────────
+    # (OPTIONAL) Enable Debug Mode
+    #   • If true, the plugin will print extra information in console
+    #     useful for testing and troubleshooting.
+    #   • Recommended to keep false in production servers.
+    # ───────────────────────────────────────────────────────────────────
+    debug: false

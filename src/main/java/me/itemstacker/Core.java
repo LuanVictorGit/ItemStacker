@@ -12,8 +12,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import lombok.Getter;
 import me.itemstacker.commands.ItemStackerCommand;
 import me.itemstacker.listeners.GeneralListeners;
+import me.itemstacker.managers.ConfigManager;
 import me.itemstacker.managers.Manager;
-import me.itemstacker.utils.ConfigManager;
 import me.itemstacker.utils.Timer;
 import me.itemstacker.utils.tasks.TaskCheck;
 

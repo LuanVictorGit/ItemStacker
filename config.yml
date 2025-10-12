@@ -12,40 +12,91 @@ Config:
 
     # ───────────────────────────────────────────────────────────────────
     # Plugin Tag / Prefix
-    #   • This prefix will be added at the beginning of all plugin messages.
-    #   • Color codes using '&' are supported (e.g., &6, &c, &a, etc.)
+    #   • This prefix will appear at the beginning of all messages sent by the plugin.
+    #   • Supports Minecraft color codes using '&' (e.g. &6, &c, &a, etc.).
+    #   • Example output: [ItemStacker] Items have been stacked!
     # ───────────────────────────────────────────────────────────────────
     tag: "&6[ItemStacker]"
 
     # ───────────────────────────────────────────────────────────────────
     # Blacklist (Items that CANNOT be stacked by the plugin)
     #
-    #   ✦ You can define items in two different formats:
+    #   ✦ Define items in one of the formats below:
     #
-    #   1) Legacy Versions (Minecraft 1.12 and below):
-    #        Use numeric ID and data value, separated by '>'
-    #        Example: 276>0
-    #                 35>14  (Red Wool)
+    #   1) Legacy Versions (MC 1.12 and below):
+    #        Format: numericID>dataValue
+    #        Example: 276>0   (Diamond Sword)
+    #                 35>14   (Red Wool)
     #
-    #   2) Modern Versions (1.13+):
-    #        Use the material name directly.
+    #   2) Modern Versions (MC 1.13+):
+    #        Use the official Material name in lowercase.
     #        Example: diamond_sword
     #                 red_wool
     #
-    #   ✦ The plugin automatically detects the server version.
-    #     - In 1.8 - 1.12: It will read both numeric and material names.
-    #     - In 1.13+: Numeric IDs are removed by Minecraft, so only names work.
+    #   ✦ Version Compatibility:
+    #       • In 1.8 - 1.12: both numeric IDs and material names are accepted.
+    #       • In 1.13+: numeric IDs no longer exist, only material names work.
     #
-    #   ✦ Any item listed here will NOT stack automatically.
+    #   ✦ Any item listed here will NOT be stacked automatically.
+    #
+    #   ✦ Tip: Useful for tools, rare items, custom items or items that should remain separate.
     # ───────────────────────────────────────────────────────────────────
     blacklist:
       - "276>0"          # Legacy example: Diamond Sword (ID 276, data 0)
       - "diamond_sword"  # Modern example: Diamond Sword
 
     # ───────────────────────────────────────────────────────────────────
-    # (OPTIONAL) Enable Debug Mode
-    #   • If true, the plugin will print extra information in console
-    #     useful for testing and troubleshooting.
-    #   • Recommended to keep false in production servers.
+    # Display Name Settings
+    # ───────────────────────────────────────────────────────────────────
+
+    # Enable display name on stacked items?
+    #   • If true, the plugin will show a custom display name above stacked items.
+    #   • Example: "Diamond x64"
+    displayname_active: true
+
+    # Always keep the display name visible? (Even from a distance)
+    #   • If true, the display name is shown at all times.
+    #   • If false, it may only show when nearby or during certain actions.
+    #   • Recommended: true for better clarity.
+    displayname_always: true
+
+    # Display name format of stacked items
+    #   • {displayname} = Original item name or custom name
+    #   • {amount} = Current amount stacked
+    #   • Supports color codes with '&'
+    #   • Example output: §bDiamond §a64x
+    displayname_format: "&b{displayname} &a{amount}x"
+
+    # ───────────────────────────────────────────────────────────────────
+    # Performance & Behavior Settings
+    # ───────────────────────────────────────────────────────────────────
+
+    # Delay between stack checks (in milliseconds)
+    #   • 1000 = 1 second
+    #   • Lower values = faster stacking, but more CPU usage
+    #   • Recommended to NOT change unless you know what you're doing
+    delayCheckItems: 500
+
+    # Maximum stack size allowed
+    #   • Default Minecraft stack limit is 64, but this plugin allows higher values
+    #   • Example: 2304 = 64 * 36 (entire inventory)
+    stack_size: 2304
+
+    # Maximum distance (in blocks) to merge stacked items
+    #   • Higher values will stack items further apart
+    #   • Lower values keep stacking more localized
+    stack_distance: 8
+
+    # Play pickup sound when items are collected?
+    #   • If true, plays the normal Minecraft pickup sound
+    #   • Set to false if used on silent servers or cosmetic-based servers
+    playsound: true
+
+    # ───────────────────────────────────────────────────────────────────
+    # (OPTIONAL) Debug Mode
+    #   • If true: the plugin will print extra information in the console
+    #       - Useful for development, bug reports, or troubleshooting
+    #   • If false: cleaner console, better performance
+    #   • Recommended: false in production servers
     # ───────────────────────────────────────────────────────────────────
     debug: false

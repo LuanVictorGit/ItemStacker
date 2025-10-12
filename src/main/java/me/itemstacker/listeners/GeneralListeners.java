@@ -1,6 +1,8 @@
 package me.itemstacker.listeners;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,15 +17,15 @@ import org.bukkit.inventory.ItemStack;
 
 import me.itemstacker.Core;
 import me.itemstacker.events.ItemCheckEvent;
+import me.itemstacker.managers.ConfigManager;
 import me.itemstacker.utils.API;
-import me.itemstacker.utils.ConfigManager;
 
 public class GeneralListeners implements Listener {
 
-	private static final Core plugin = Core.getInstance();
-	private static final ConfigManager config = ConfigManager.get();
-    private static final int DISTANCE = 8;
-    private static final int MAX_STACK_SIZE = Integer.MAX_VALUE;
+	private final Core plugin = Core.getInstance();
+	private final ConfigManager config = ConfigManager.get();
+    private final int DISTANCE = config.getStack_distance();
+    private final int MAX_STACK_SIZE = config.getStack_size();
 
 	@EventHandler
     public void onPickup(PlayerPickupItemEvent e) {
@@ -58,9 +60,15 @@ public class GeneralListeners implements Listener {
     }
 
 	private void playSound(Player p) {
+		if (!config.isPlaysound()) return;
+		List<String> sounds = Arrays.asList("ENTITY_ITEM_PICKUP", "ITEM_PICKUP");
 		for(Sound sound : Sound.values()) {
-			if (sound.toString().toLowerCase().contains("item_pickup")) {
-				p.playSound(p.getLocation(), sound, 1, 1);
+			if (sounds.contains(sound.toString().toUpperCase())) {
+				loop: for(Player viewer : Bukkit.getOnlinePlayers()) {
+					if (!viewer.getWorld().equals(p.getWorld())) continue loop;
+					if (viewer.getLocation().distanceSquared(p.getLocation()) > (10*10)) continue;
+					viewer.playSound(p.getLocation(), sound, 1, 1);
+				}
 				break;
 			}
 		}
@@ -109,14 +117,21 @@ public class GeneralListeners implements Listener {
     }
 
     private void updateItemName(Item item) {
+    	if (!config.isDisplayname_active()) return;
         ItemStack stack = item.getItemStack();
         if (stack == null) return;
 
         int amount = stack.getAmount();
         String materialName = stack.getType().name().toLowerCase().replace("_", " ");
-
-        item.setCustomNameVisible(true);
-        item.setCustomName("§b" + materialName + " §a" + amount + "x");
+        
+        if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()) {
+        	materialName = stack.getItemMeta().getDisplayName();
+        }
+        
+        item.setCustomNameVisible(config.isDisplayname_always());
+        item.setCustomName(config.getDisplayname_format()
+        		.replace("{amount}", String.valueOf(amount))
+        		.replace("{displayname}", materialName));
 
         if (amount == 1) {
             item.setCustomNameVisible(false);

@@ -58,21 +58,35 @@ public class GeneralListeners implements Listener {
         p.updateInventory();
         playSound(p);
     }
-
+	
+	private Sound originalSound;
 	private void playSound(Player p) {
 		if (!config.isPlaysound()) return;
-		List<String> sounds = Arrays.asList("ENTITY_ITEM_PICKUP", "ITEM_PICKUP");
+		if (originalSound != null) {
+			playSoundToPlayers(p);
+			return;
+		}
+		List<String> sounds = Arrays.asList("ENTITY_ITEM_PICKUP", "ENTITY.ITEM.PICKUP", "ITEM_PICKUP", "ITEM.PICKUP");
 		for(Sound sound : Sound.values()) {
-			if (sounds.contains(sound.toString().toUpperCase())) {
-				loop: for(Player viewer : Bukkit.getOnlinePlayers()) {
-					if (!viewer.getWorld().equals(p.getWorld())) continue loop;
-					if (viewer.getLocation().distanceSquared(p.getLocation()) > (10*10)) continue;
-					viewer.playSound(p.getLocation(), sound, 1, 1);
-				}
+			if (sounds.contains(sound.name().toUpperCase())) {
+				originalSound = sound;
+				playSoundToPlayers(p); 
 				break;
 			}
 		}
     }
+	
+	private void playSoundToPlayers(Player p) {
+		if (originalSound == null) {
+			playSound(p);
+			return;
+		}
+		for(Player viewer : Bukkit.getOnlinePlayers()) {
+			if (!viewer.getWorld().equals(p.getWorld())) continue;
+			if (viewer.getLocation().distanceSquared(p.getLocation()) > (10*10)) continue;
+			viewer.playSound(p.getLocation(), originalSound, 0.5f, 10);
+		}
+	}
     
     @EventHandler
     public void onCheck(ItemCheckEvent e) {
@@ -128,7 +142,10 @@ public class GeneralListeners implements Listener {
         	materialName = stack.getItemMeta().getDisplayName();
         }
         
-        item.setCustomNameVisible(config.isDisplayname_always());
+        if (config.isDisplayname_always()) {
+        	item.setCustomNameVisible(true);
+        }
+        
         item.setCustomName(config.getDisplayname_format()
         		.replace("{amount}", String.valueOf(amount))
         		.replace("{displayname}", materialName));

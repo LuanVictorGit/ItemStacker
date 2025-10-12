@@ -34,7 +34,7 @@ public class ConfigManager {
 		stack_distance = section.getInt("stack_distance");
 		stack_size = section.getInt("stack_size");
 		delayCheckItems = section.getLong("delayCheckItems");
-		displayname_format = section.getString("displayname_format");
+		displayname_format = section.getString("displayname_format").replace("&", "§");
 		displayname_always = section.getBoolean("displayname_always");
 		displayname_active = section.getBoolean("displayname_active");
 		debug = section.getBoolean("debug");

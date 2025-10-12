@@ -5,6 +5,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Item;
 
 import me.itemstacker.events.ItemCheckEvent;
+import me.itemstacker.managers.ConfigManager;
 import me.itemstacker.utils.Task;
 
 public class TaskCheck extends Task {
@@ -13,12 +14,13 @@ public class TaskCheck extends Task {
 		super(new Runnable() {
 			
 			private long checkInterval;
+			private ConfigManager config = ConfigManager.get();
 			
 			@Override
 			public void run() {
 				
 				long currentTime = System.currentTimeMillis();
-				if (currentTime-checkInterval < 500) return;
+				if (currentTime-checkInterval < config.getDelayCheckItems()) return;
 				checkInterval = currentTime;
 				
 				Task.run(()-> {

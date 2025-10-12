@@ -1,6 +1,6 @@
 name: ItemStacker
 author: lHawk_
-version: 0.1
+version: 0.2
 main: me.itemstacker.Core
 description: Allows you to stack your items to reduce the number of items on the floor
 api-version: 1.13

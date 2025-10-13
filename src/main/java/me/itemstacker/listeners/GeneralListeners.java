@@ -12,6 +12,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -88,9 +89,7 @@ public class GeneralListeners implements Listener {
 		}
 	}
     
-    @EventHandler
-    public void onCheck(ItemCheckEvent e) {
-        Item item = e.getItem();
+	private void checkItem(Item item) {
         ItemStack itemStack = item.getItemStack();
 
         if (itemStack == null || itemStack.getAmount() <= 0) return;
@@ -122,12 +121,28 @@ public class GeneralListeners implements Listener {
             } else {
                 otherStack.setAmount(totalAmount);
                 updateItemName(otherItem);
+                Location location = item.getLocation().clone();
                 item.remove();
+                otherItem.teleport(location);
             }
             return;
         }
 
         updateItemName(item);
+	}
+	
+    @EventHandler
+    public void onCheck(ItemCheckEvent e) {
+        checkItem(e.getItem());
+    }
+    
+    @EventHandler
+    public void onSpawn(EntitySpawnEvent e) {
+    	if (!(e.getEntity() instanceof Item)) return;
+    	Item item = (Item) e.getEntity();
+    	if (item.isDead() || !item.isValid()) return;
+		ItemCheckEvent event = new ItemCheckEvent(item);
+		Bukkit.getPluginManager().callEvent(event);
     }
 
     private void updateItemName(Item item) {

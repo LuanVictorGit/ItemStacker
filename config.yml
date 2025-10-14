@@ -75,7 +75,7 @@ Config:
     #   • 1000 = 1 second
     #   • Lower values = faster stacking, but more CPU usage
     #   • Recommended to NOT change unless you know what you're doing
-    delayCheckItems: 500
+    delayCheckItems: 3000
 
     # Maximum stack size allowed
     #   • Default Minecraft stack limit is 64, but this plugin allows higher values

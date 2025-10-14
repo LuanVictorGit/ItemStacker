@@ -3,15 +3,16 @@ package me.itemstacker.listeners;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,12 +22,12 @@ import me.itemstacker.managers.ConfigManager;
 import me.itemstacker.utils.API;
 
 public class GeneralListeners implements Listener {
-
+	
 	private final Core plugin = Core.getInstance();
 	private final ConfigManager config = ConfigManager.get();
     private final int DISTANCE = config.getStack_distance();
     private final int MAX_STACK_SIZE = config.getStack_size();
-
+    
 	@EventHandler
     public void onPickup(PlayerPickupItemEvent e) {
         Player p = e.getPlayer();
@@ -58,6 +59,17 @@ public class GeneralListeners implements Listener {
         p.updateInventory();
         playSound(p);
     }
+	
+	@EventHandler
+	public void onSpawn(EntitySpawnEvent e) {
+		if (!(e.getEntity() instanceof Item)) return;
+		Item item = (Item) e.getEntity();
+		Bukkit.getScheduler().runTask(Core.getInstance(), ()-> {
+			if (item.isDead() || !item.isValid()) return;
+			ItemCheckEvent event = new ItemCheckEvent(item);
+			Bukkit.getPluginManager().callEvent(event);
+		});
+	}
 	
 	private Sound originalSound;
 	private void playSound(Player p) {
@@ -97,8 +109,13 @@ public class GeneralListeners implements Listener {
         	if (API.isSameTypeAndData(itemStack, itemBlacklist)) return;
         }
         
-        World world = item.getWorld();
-        for (Item otherItem : world.getEntitiesByClass(Item.class)) {
+        List<Item> otherItems = item.getNearbyEntities(DISTANCE, DISTANCE, DISTANCE)
+        	    .stream()
+        	    .filter(e -> e instanceof Item)
+        	    .map(e -> (Item) e)
+        	    .collect(Collectors.toList());
+        
+        for (Item otherItem : otherItems) {
             if (otherItem.equals(item)) continue;
             if (otherItem.isDead() || !otherItem.isValid()) continue;
 
@@ -120,9 +137,7 @@ public class GeneralListeners implements Listener {
             } else {
                 otherStack.setAmount(totalAmount);
                 updateItemName(otherItem);
-                Location location = item.getLocation().clone();
                 item.remove();
-                otherItem.teleport(location);
             }
             return;
         }

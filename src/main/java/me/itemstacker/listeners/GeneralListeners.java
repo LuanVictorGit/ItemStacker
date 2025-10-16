@@ -1,15 +1,11 @@
 package me.itemstacker.listeners;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
@@ -30,34 +26,18 @@ public class GeneralListeners implements Listener {
     
 	@EventHandler
     public void onPickup(PlayerPickupItemEvent e) {
-        Player p = e.getPlayer();
         Item item = e.getItem();
-        ItemStack itemStack = item.getItemStack().clone();
-
-        e.setCancelled(true);
-        item.remove();
-
-        ItemStack itemCloned = itemStack.clone();
-        itemCloned.setAmount(1);
-        
         Location loc = item.getLocation().clone();
-        
-        for (int i = 0; i < itemStack.getAmount(); i++) {
-        	HashMap<Integer, ItemStack> rest = p.getInventory().addItem(itemCloned.clone());
-
-            if (!rest.isEmpty()) {
-                for (ItemStack remaining : rest.values()) {
-                    p.getWorld().dropItemNaturally(loc, remaining);
-                }
-            }
-		}
+        Bukkit.getScheduler().runTask(plugin, ()-> {
+        	if (item.isDead() || !item.isValid()) return;
+        	updateItemName(item);
+        	e.getPlayer().updateInventory();
+        });
         
         if (config.isDebug()) {
-        	Bukkit.getConsoleSender().sendMessage(plugin.getTag() + " §7Stacked item in X:" + loc.getBlockX() + " Y:"+loc.getBlockY() + " Z:"+loc.getBlockZ() + "! [DEBUG]");
+        	Bukkit.getConsoleSender().sendMessage(plugin.getTag() + " §7Pickup item in X:" + loc.getBlockX() + " Y:"+loc.getBlockY() + " Z:"+loc.getBlockZ() + "! [DEBUG]");
         }
-
-        p.updateInventory();
-        playSound(p);
+        
     }
 	
 	@EventHandler
@@ -69,35 +49,6 @@ public class GeneralListeners implements Listener {
 			ItemCheckEvent event = new ItemCheckEvent(item);
 			Bukkit.getPluginManager().callEvent(event);
 		});
-	}
-	
-	private Sound originalSound;
-	private void playSound(Player p) {
-		if (!config.isPlaysound()) return;
-		if (originalSound != null) {
-			playSoundToPlayers(p);
-			return;
-		}
-		List<String> sounds = Arrays.asList("ENTITY_ITEM_PICKUP", "ENTITY.ITEM.PICKUP", "ITEM_PICKUP", "ITEM.PICKUP");
-		for(Sound sound : Sound.values()) {
-			if (sounds.contains(sound.name().toUpperCase())) {
-				originalSound = sound;
-				playSoundToPlayers(p); 
-				break;
-			}
-		}
-    }
-	
-	private void playSoundToPlayers(Player p) {
-		if (originalSound == null) {
-			playSound(p);
-			return;
-		}
-		for(Player viewer : Bukkit.getOnlinePlayers()) {
-			if (!viewer.getWorld().equals(p.getWorld())) continue;
-			if (viewer.getLocation().distanceSquared(p.getLocation()) > (10*10)) continue;
-			viewer.playSound(p.getLocation(), originalSound, 0.5f, 10);
-		}
 	}
     
 	private void checkItem(Item item) {

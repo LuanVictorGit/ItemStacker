@@ -1,0 +1,20 @@
+{
+  "paper-1.8.8": { "project": "paper", "version": "1.8.8", "java": "21", "bot": "1.8.8", "levelType": "FLAT" },
+  "paper-1.9.4": { "project": "paper", "version": "1.9.4", "java": "21", "bot": "1.9.4", "levelType": "FLAT" },
+  "paper-1.12.2": { "project": "paper", "version": "1.12.2", "java": "21", "bot": "1.12.2", "levelType": "FLAT" },
+  "paper-1.13.2": { "project": "paper", "version": "1.13.2", "java": "21", "bot": "1.13.2", "levelType": "FLAT" },
+  "paper-1.15.2": { "project": "paper", "version": "1.15.2", "java": "21", "bot": "1.15.2", "levelType": "flat" },
+  "paper-1.16.5": { "project": "paper", "version": "1.16.5", "java": "21", "bot": "1.16.5", "levelType": "flat" },
+  "paper-1.17.1": { "project": "paper", "version": "1.17.1", "java": "21", "bot": "1.17.1", "levelType": "flat" },
+  "paper-1.18.2": { "project": "paper", "version": "1.18.2", "java": "21", "bot": "1.18.2", "levelType": "flat" },
+  "paper-1.19.4": { "project": "paper", "version": "1.19.4", "java": "21", "bot": "1.19.4", "levelType": "flat" },
+  "paper-1.20.4": { "project": "paper", "version": "1.20.4", "java": "21", "bot": "1.20.4", "levelType": "minecraft:flat" },
+  "paper-1.21.11": { "project": "paper", "version": "1.21.11", "java": "21", "bot": "1.21.11", "levelType": "minecraft:flat" },
+  "paper-26.1.2": { "project": "paper", "version": "26.1.2", "java": "25", "bot": "26.1", "levelType": "minecraft:flat" },
+  "paper-26.3": { "project": "paper", "version": "26.3", "java": "25", "bot": null, "levelType": "minecraft:flat" },
+  "spigot-1.21.11": { "jar": "C:/Temp/bt/out/spigot-1.21.11.jar", "java": "21", "bot": "1.21.11", "levelType": "minecraft:flat" },
+  "folia-1.21.11": { "project": "folia", "version": "1.21.11", "java": "21", "bot": "1.21.11", "levelType": "minecraft:flat" },
+  "folia-26.2": { "project": "folia", "version": "26.2", "java": "25", "bot": null, "levelType": "minecraft:flat" },
+  "spigot-1.8.8": { "jar": "C:/Temp/bt/out188/spigot-1.8.8.jar", "java": "8", "bot": "1.8.8", "levelType": "FLAT" },
+  "paper-1.8.8-java8": { "project": "paper", "version": "1.8.8", "java": "8", "bot": "1.8.8", "levelType": "FLAT" }
+}

@@ -1,0 +1,39 @@
+PASS spawn-merge entities=1 total=640 physical=64
+PASS merge-event-guard cancelled=true total=192
+PASS oversized-drop entities=1 total=200 physical=64
+PASS limit-split totals=[600, 1000]
+PASS hopper-empty hopper=320 pile=320 ticks=60 trace=128,256,320, items=2129:64+256@-1020,4.136901325495907,552 hopperBlock=-1020,3,552
+PASS incompatible stone entities=4/4 total=50 pickaxe entities=2 total=3
+PASS blacklist-world entities=2 tracked=false
+PASS cross-chunk entities=1 total=128
+PASS block-drops books=150 entities=2
+PASS thresholds 65=65 127=127 128=128 32767=32767 32768=32768
+PASS big-quantity totals=[28000, 100000] physical=64
+PASS mob-drops PORK dropped=57 pile=57 entities=1
+PASS dispenser pile=650 entities=1 left=0
+PASS dropper pile=650 entities=1 left=0
+PASS hopper-partial hopper=64 pile=306 diamonds=256
+PASS vanilla-merge entities=2 total=60 vanillaMerged=false
+PASS vanilla-control entities=1 total=60 vanillaMerged=true (platform behavior without the plugin)
+PASS group-cleanup tracked=5/5 leaked=0 ticks=80 trace=5,5,5,0,
+PASS chunk-unload-reload before=512 unloaded=true/true after=512 tracked=true controlSwords=1 entitiesInChunk=2
+PASS stress spawnMergeMs=94 spawnMergeEntities=10 spawnMergeTotal=27025 entitiesBefore=6000 entitiesAfter=10 totalBefore=27025 totalAfter=27025 ticksToConverge=20 worstTickMs=96 Name updates: 65 | Runs: 193 | Avg: 502us | Worst: 20629us
+PASS millions spawnMs=660 entities=50 total=5000000 physical=64 Groups: 88 | Hidden items: 5221173 | Queue: 1
+PASS pickup-control sword=1 apple=3
+PASS pickup-bulk inventory=2304/2304 pile=2696/2696
+PASS pickup-partial inventory=314/314 pile=686/686
+PASS pickup-unstackable inventory=36/36 pile=64/64
+PASS pickup-full-inventory inventory=0/0 pile=300/300
+PASS pickup-truncated-10 inventory=10/10 pile=190/190
+PASS pickup-truncated-40 inventory=40/40 pile=460/460
+PASS pickup-vanilla-partial inventory=10/10 pile=40/40
+PASS visual-create total=1000
+PASS visual-clear total=1
+PASS visual-retrack id=93662
+PASS visual-bot-live entity=93662 expected=1000x seen="§bEmerald Block §a1000x" visible=true
+PASS visual-bot-name-cleared entity=93678 sawNameBefore=true lastName="" visible=0
+PASS visual-bot-retrack entity=93662 expected=1000x updatesAfterReturn=1
+PASS visual-bot-late-join entity=93662 expected=1000x seen="§bEmerald Block §a1000x" visible=true
+PASS persist-create hay=7777 stone=3000
+PASS persist-verify hay=7777/7777 stone=3000/3000 tracked=true
+paper-1.8.8: 38 passed, 0 failed

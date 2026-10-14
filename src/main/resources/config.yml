@@ -1,0 +1,137 @@
+# Main configuration file for the ItemStacker plugin.
+# Use this file to customize messages, permissions, and stacking behavior.
+
+# ───────────────────────────────────────────────────────────────────────────────
+# Commands and permissions:
+#   itemstacker.adm
+#       • Allows /itemstacker help, /itemstacker reload and /itemstacker stats
+# ───────────────────────────────────────────────────────────────────────────────
+
+Config:
+
+    # Prefix shown in console messages. Supports '&' color codes.
+    tag: "&6[ItemStacker]"
+
+    # ───────────────────────────────────────────────────────────────────
+    # Blacklist (items that CANNOT be stacked by the plugin)
+    #
+    #   • Material name (all versions), e.g. diamond_sword
+    #   • Legacy versions (1.12 and below) also accept numericID or numericID>data, e.g. 276 or 35>14
+    #   • An entry without ">data" blocks every variant of that material.
+    #   • An entry with ">data" blocks only that data/damage value.
+    # ───────────────────────────────────────────────────────────────────
+    blacklist:
+      - "diamond_sword"
+
+    # Whitelist: when it has entries, ONLY these materials are stacked (the blacklist still applies).
+    # An empty list means every material is allowed.
+    whitelist: []
+
+    # Worlds where items are never stacked (names are case-insensitive).
+    ignored_worlds: []
+
+    # Stack items that carry custom metadata (names, lore, enchantments, plugin data).
+    #   • Only items that are exactly identical (ItemStack#isSimilar) are ever merged.
+    #   • false = items with metadata are left to the vanilla behavior.
+    stack_custom_items: true
+
+    # Stack items whose vanilla stack size is 1 (tools, armor, potions on old versions...).
+    stack_unstackable_items: true
+
+    # ───────────────────────────────────────────────────────────────────
+    # Display name (sent to players with packets, nothing is written to the item entity)
+    # ───────────────────────────────────────────────────────────────────
+
+    # Show "name + amount" above stacked items.
+    displayname_active: true
+
+    # Keep the name visible from a distance (false = only while looking at the item).
+    displayname_always: true
+
+    # Name format. Supports MiniMessage (<gradient:#00d2ff:#3a7bd5>, <#00ffc8>, <green>),
+    # HEX colors (&#00d2ff), and legacy color codes (&b). MiniMessage is the recommended option.
+    # Placeholders:
+    #   {displayname} = custom item name or the material name
+    #   {amount}      = total amount of the stack (1234567)
+    #   {short}       = total amount in compact form (1.2M)
+    #   {time}        = remaining time until despawn (respects server fork despawn time)
+    #   {timer}       = alias for {time} (RoseStacker compatible)
+    #   {despawn}     = alias for {time}
+    displayname_format: "&b{displayname} &a{amount}x"
+
+    # Show remaining time until despawn in the display name.
+    # true = displays the countdown timer using {time} (or appends despawn_timer_suffix).
+    # false = despawn timer is disabled.
+    despawn_timer_active: false
+
+    # Format used for the remaining despawn time. Placeholders:
+    #   {mm}            = two-digit minutes remaining (e.g. 04)
+    #   {m}             = minutes remaining (e.g. 4)
+    #   {ss}            = two-digit seconds remaining in the minute (e.g. 05)
+    #   {s}             = seconds remaining in the minute (e.g. 5)
+    #   {total_seconds} = total seconds remaining until despawn (e.g. 245)
+    despawn_time_format: "{mm}:{ss}"
+
+    # Suffix automatically appended to the display name when despawn_timer_active is true
+    # and {time} is not present in displayname_format.
+    despawn_timer_suffix: " &7({time})"
+
+    # Smallest amount that shows a name (1 = every item).
+    displayname_min_amount: 2
+
+    # Players farther than this many blocks do not receive name updates.
+    view_range: 32
+
+    # Name updates are grouped and sent at most once per this many ticks (20 ticks = 1 second).
+    visual_interval: 5
+
+    # ───────────────────────────────────────────────────────────────────
+    # Stacking
+    # ───────────────────────────────────────────────────────────────────
+
+    # Delay (milliseconds) before newly dropped items are merged with nearby stacks.
+    delayCheckItems: 3000
+
+    # Maximum amount of items represented by one stack. The item entity itself only
+    # carries the vanilla stack size; the rest is stored as hidden data and handed to
+    # players, hoppers and other inventories when the stack is collected.
+    stack_size: 100000
+
+    # Different limit for specific materials (overrides stack_size).
+    stack_limits: {}
+    #  DIAMOND: 5000
+    #  COBBLESTONE: 10000000
+
+    # Maximum distance (in blocks, up to 32) to merge stacked items.
+    stack_distance: 8
+
+    # Merge a dropped item into a nearby stack the moment it spawns, so no new entity
+    # is created at all. false = items are merged after delayCheckItems.
+    merge_on_spawn: true
+
+    # Play the pickup sound when a stack is collected.
+    playsound: true
+
+    # ───────────────────────────────────────────────────────────────────
+    # Performance
+    # ───────────────────────────────────────────────────────────────────
+
+    # Maximum number of stacks examined per cycle (a cycle runs every visual_interval ticks).
+    budget: 1500
+
+    # Longest time (milliseconds) one chunk may spend merging in a single run; the rest
+    # of a very crowded chunk continues in the next cycle.
+    slice_ms: 5
+
+    # Maximum number of chunks waiting to be processed.
+    queue_limit: 4096
+
+    # Every chunk with items is checked again after this many seconds (0 = disabled).
+    rescan_seconds: 30
+
+    # Legacy versions (below 1.14) keep hidden amounts in plugins/ItemStacker/groups.dat;
+    # this is how often (seconds) the file is written. 1.14+ stores them inside the item entity.
+    save_seconds: 30
+
+    # Print slow processing warnings in the console. /itemstacker stats shows live numbers.
+    debug: false

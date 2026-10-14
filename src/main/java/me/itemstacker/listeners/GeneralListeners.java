@@ -1,128 +1,93 @@
 package me.itemstacker.listeners;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
+import org.bukkit.event.entity.ItemMergeEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.world.WorldSaveEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 
-import me.itemstacker.Core;
-import me.itemstacker.events.ItemCheckEvent;
-import me.itemstacker.managers.ConfigManager;
-import me.itemstacker.utils.API;
+import me.itemstacker.managers.Manager;
+import me.itemstacker.utils.Platform;
 
 public class GeneralListeners implements Listener {
-	
-	private final Core plugin = Core.getInstance();
-	private final ConfigManager config = ConfigManager.get();
-    private final int DISTANCE = config.getStack_distance();
-    private final int MAX_STACK_SIZE = config.getStack_size();
-    
-	@EventHandler
-    public void onPickup(PlayerPickupItemEvent e) {
-        Item item = e.getItem();
-        Location loc = item.getLocation().clone();
-        Bukkit.getScheduler().runTask(plugin, ()-> {
-        	if (item.isDead() || !item.isValid()) return;
-        	updateItemName(item);
-        	e.getPlayer().updateInventory();
-        });
-        
-        if (config.isDebug()) {
-        	Bukkit.getConsoleSender().sendMessage(plugin.getTag() + " §7Pickup item in X:" + loc.getBlockX() + " Y:"+loc.getBlockY() + " Z:"+loc.getBlockZ() + "! [DEBUG]");
-        }
-        
-    }
-	
-	@EventHandler
-	public void onSpawn(EntitySpawnEvent e) {
-		if (!(e.getEntity() instanceof Item)) return;
-		Item item = (Item) e.getEntity();
-		Bukkit.getScheduler().runTask(Core.getInstance(), ()-> {
-			if (item.isDead() || !item.isValid()) return;
-			ItemCheckEvent event = new ItemCheckEvent(item);
-			Bukkit.getPluginManager().callEvent(event);
+
+	private final Manager manager;
+	private final Platform platform;
+
+	public GeneralListeners(Manager manager) {
+		this.manager = manager;
+		this.platform = manager.platform;
+	}
+
+	public void register() {
+		if (platform.entityPickup) {
+			platform.listen(this, "org.bukkit.event.entity.EntityPickupItemEvent", EventPriority.HIGHEST, e -> {
+				org.bukkit.entity.Entity picker = ((EntityEvent) e).getEntity();
+				manager.pickup((Cancellable) e, picker instanceof Player ? (Player) picker : null, platform.pickedItem(e), platform.remaining(e));
+			});
+		} else {
+			platform.listen(this, "org.bukkit.event.player.PlayerPickupItemEvent", EventPriority.HIGHEST, e -> {
+				PlayerPickupItemEvent pickup = (PlayerPickupItemEvent) e;
+				manager.pickup(pickup, pickup.getPlayer(), pickup.getItem(), pickup.getRemaining());
+			});
+		}
+		platform.listen(this, "org.bukkit.event.entity.EntityRemoveEvent", EventPriority.MONITOR, e -> {
+			org.bukkit.entity.Entity removed = ((EntityEvent) e).getEntity();
+			if (removed instanceof Item && !platform.causeOf(e).equals("UNLOAD")) manager.despawn((Item) removed);
 		});
+		if (platform.entityStorage) {
+			platform.listen(this, "org.bukkit.event.world.EntitiesLoadEvent", EventPriority.MONITOR, e -> manager.load(platform.entitiesOf(e), false));
+			platform.listen(this, "org.bukkit.event.world.EntitiesUnloadEvent", EventPriority.MONITOR, e -> manager.unload(platform.entitiesOf(e)));
+		} else {
+			platform.listen(this, "org.bukkit.event.world.ChunkLoadEvent", EventPriority.MONITOR, e -> manager.load(Arrays.asList(((ChunkLoadEvent) e).getChunk().getEntities()), false));
+		}
 	}
-    
-	private void checkItem(Item item) {
-        ItemStack itemStack = item.getItemStack();
 
-        if (itemStack == null || itemStack.getAmount() <= 0) return;
-
-        for(ItemStack itemBlacklist : config.getItems()) {
-        	if (API.isSameTypeAndData(itemStack, itemBlacklist)) return;
-        }
-        
-        List<Item> otherItems = item.getNearbyEntities(DISTANCE, DISTANCE, DISTANCE)
-        	    .stream()
-        	    .filter(e -> e instanceof Item)
-        	    .map(e -> (Item) e)
-        	    .collect(Collectors.toList());
-        
-        for (Item otherItem : otherItems) {
-            if (otherItem.equals(item)) continue;
-            if (otherItem.isDead() || !otherItem.isValid()) continue;
-
-            ItemStack otherStack = otherItem.getItemStack();
-            if (otherStack == null || otherStack.getAmount() <= 0) continue;
-
-            Location loc = otherItem.getLocation();
-            if (loc.distanceSquared(item.getLocation()) > (DISTANCE * DISTANCE)) continue;
-
-            if (!otherStack.isSimilar(itemStack)) continue;
-
-            int totalAmount = otherStack.getAmount() + itemStack.getAmount();
-
-            if (totalAmount > MAX_STACK_SIZE) {
-                otherStack.setAmount(MAX_STACK_SIZE);
-                itemStack.setAmount(totalAmount - MAX_STACK_SIZE);
-                updateItemName(otherItem);
-                updateItemName(item);
-            } else {
-                otherStack.setAmount(totalAmount);
-                updateItemName(otherItem);
-                item.remove();
-            }
-            return;
-        }
-
-        updateItemName(item);
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onSpawn(ItemSpawnEvent e) {
+		if (manager.absorb(e.getEntity())) e.setCancelled(true);
 	}
-	
-    @EventHandler
-    public void onCheck(ItemCheckEvent e) {
-        checkItem(e.getItem());
-    }
 
-    private void updateItemName(Item item) {
-    	if (!config.isDisplayname_active()) return;
-        ItemStack stack = item.getItemStack();
-        if (stack == null) return;
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onMerge(ItemMergeEvent e) {
+		manager.vanillaMerge(e);
+	}
 
-        int amount = stack.getAmount();
-        String materialName = stack.getType().name().toLowerCase().replace("_", " ");
-        
-        if (stack.hasItemMeta() && stack.getItemMeta().hasDisplayName()) {
-        	materialName = stack.getItemMeta().getDisplayName();
-        }
-        
-        if (config.isDisplayname_always()) {
-        	item.setCustomNameVisible(true);
-        }
-        
-        item.setCustomName(config.getDisplayname_format()
-        		.replace("{amount}", String.valueOf(amount))
-        		.replace("{displayname}", materialName));
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onHopper(InventoryPickupItemEvent e) {
+		manager.suck(e);
+	}
 
-        if (amount == 1) {
-            item.setCustomNameVisible(false);
-        }
-    }
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onDespawn(ItemDespawnEvent e) {
+		manager.despawn(e.getEntity());
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onChunkUnload(ChunkUnloadEvent e) {
+		manager.unload(e.getWorld(), e.getChunk().getX(), e.getChunk().getZ());
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onWorldUnload(WorldUnloadEvent e) {
+		manager.unload(e.getWorld());
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onSave(WorldSaveEvent e) {
+		manager.save();
+	}
 }

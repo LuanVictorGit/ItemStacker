@@ -1,0 +1,22 @@
+name: ItemStacker
+author: lHawk_
+version: ${project.version}
+main: me.itemstacker.Core
+description: Allows you to stack your items to reduce the number of items on the floor
+api-version: 1.13
+load: STARTUP
+folia-supported: true
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
+commands:
+  itemstacker:
+    description: ItemStacker administration
+permissions:
+  itemstacker.adm:
+    description: Allows /itemstacker help, reload and stats
+    default: op

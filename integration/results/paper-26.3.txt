@@ -1,0 +1,29 @@
+PASS spawn-merge entities=1 total=640 physical=64
+PASS limit-split totals=[600, 1000]
+PASS oversized-drop entities=1 total=200 physical=64
+PASS merge-event-guard cancelled=true total=192
+PASS hopper-empty hopper=320 pile=320 ticks=40 trace=128,320, items=3078:64+256@36,-60.3125,24 hopperBlock=36,-61,24
+PASS incompatible stone entities=4/4 total=50 pickaxe entities=2 total=3
+PASS cross-chunk entities=1 total=128
+PASS blacklist-world entities=2 tracked=false
+PASS block-drops books=150 entities=1
+PASS big-quantity totals=[28000, 100000] physical=64
+PASS thresholds 65=65 127=127 128=128 32767=32767 32768=32768
+PASS mob-drops PORKCHOP dropped=70 pile=70 entities=1
+PASS dropper pile=650 entities=1 left=0
+PASS dispenser pile=650 entities=1 left=0
+PASS hopper-partial hopper=64 pile=306 diamonds=256
+FAIL vanilla-merge entities=2 total=60
+PASS group-cleanup tracked=5/5 leaked=0 ticks=20 trace=0,
+PASS chunk-unload-reload before=512 unloaded=false/true after=512 tracked=true
+PASS stress spawnMergeMs=95 spawnMergeEntities=10 spawnMergeTotal=27025 entitiesBefore=6000 entitiesAfter=10 totalBefore=27025 totalAfter=27025 ticksToConverge=20 worstTickMs=369 Name updates: 0 | Runs: 166 | Avg: 2058us | Worst: 336065us
+PASS millions spawnMs=305 entities=50 total=5000000 physical=64 Groups: 88 | Hidden items: 5221179 | Queue: 1
+PASS region-0 entities=2 total=5560 expected=5560
+PASS region-1 entities=2 total=5561 expected=5561
+PASS region-2 entities=2 total=5562 expected=5562
+PASS region-3 entities=2 total=5563 expected=5563
+PASS region-4 entities=2 total=5564 expected=5564
+PASS region-5 entities=2 total=5565 expected=5565
+PASS persist-create hay=7777 stone=3000
+PASS persist-verify hay=7777/7777 stone=3000/3000 tracked=true
+paper-26.3: 27 passed, 1 failed

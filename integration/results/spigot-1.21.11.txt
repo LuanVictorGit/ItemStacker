@@ -1,0 +1,8 @@
+PASS visual-create total=1000
+PASS visual-clear total=1
+PASS visual-retrack id=2
+PASS visual-bot-live entity=2 expected=1000x seen={"type":"compound","value":{"text":{"type":"string","value":""},"extra":{"type":"list","value":{"type":"compound","value":[{"text":{"type":"string","value":"Eme visible=true
+PASS visual-bot-name-cleared entity=18 sawNameBefore=true lastName=null visible=false
+PASS visual-bot-retrack entity=2 expected=1000x updatesAfterReturn=1
+PASS visual-bot-late-join entity=2 expected=1000x seen={"type":"compound","value":{"text":{"type":"string","value":""},"extra":{"type":"list","value":{"type":"compound","value":[{"text":{"type":"string","value":"Eme visible=true
+spigot-1.21.11: 7 passed, 0 failed

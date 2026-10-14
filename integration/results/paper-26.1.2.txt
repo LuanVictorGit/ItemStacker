@@ -1,0 +1,39 @@
+PASS spawn-merge entities=1 total=640 physical=64
+PASS limit-split totals=[600, 1000]
+PASS oversized-drop entities=1 total=200 physical=64
+PASS merge-event-guard cancelled=true total=192
+PASS incompatible stone entities=4/4 total=50 pickaxe entities=2 total=3
+PASS cross-chunk entities=1 total=128
+PASS blacklist-world entities=2 tracked=false
+PASS hopper-empty hopper=320 pile=320 ticks=60 trace=128,256,320, items=3079:64+256@36,-60.3125,24 hopperBlock=36,-61,24
+PASS block-drops books=150 entities=2
+PASS big-quantity totals=[28000, 100000] physical=64
+PASS thresholds 65=65 127=127 128=128 32767=32767 32768=32768
+PASS mob-drops PORKCHOP dropped=62 pile=62 entities=1
+PASS dropper pile=650 entities=1 left=0
+PASS dispenser pile=650 entities=1 left=0
+PASS hopper-partial hopper=64 pile=306 diamonds=256
+PASS vanilla-merge entities=1 total=60 vanillaMerged=true
+PASS vanilla-control entities=1 total=60 vanillaMerged=true (platform behavior without the plugin)
+PASS group-cleanup tracked=5/5 leaked=0 ticks=20 trace=0,
+PASS chunk-unload-reload before=512 unloaded=false/true after=512 tracked=true controlSwords=1 entitiesInChunk=2
+PASS stress spawnMergeMs=158 spawnMergeEntities=10 spawnMergeTotal=27025 entitiesBefore=6000 entitiesAfter=12 totalBefore=27025 totalAfter=27025 ticksToConverge=20 worstTickMs=177 Name updates: 41 | Runs: 192 | Avg: 735us | Worst: 97903us
+PASS millions spawnMs=450 entities=50 total=5000000 physical=64 Groups: 89 | Hidden items: 5221162 | Queue: 1
+PASS pickup-control sword=1 apple=3
+PASS pickup-bulk inventory=2304/2304 pile=2696/2696
+PASS pickup-partial inventory=314/314 pile=686/686
+PASS pickup-unstackable inventory=36/36 pile=64/64
+PASS pickup-full-inventory inventory=0/0 pile=300/300
+PASS pickup-truncated-10 inventory=10/10 pile=190/190
+PASS pickup-truncated-40 inventory=40/40 pile=460/460
+PASS pickup-vanilla-partial inventory=10/10 pile=40/40
+PASS visual-create total=1000
+PASS visual-clear total=1
+PASS visual-retrack id=93521
+PASS visual-bot-live entity=93521 expected=1000x seen={"type":"compound","value":{"text":{"type":"string","value":""},"extra":{"type":"list","value":{"type":"compound","value":[{"text":{"type":"string","value":"Eme visible=true
+PASS visual-bot-name-cleared entity=93537 sawNameBefore=true lastName=null visible=false
+PASS visual-bot-retrack entity=93521 expected=1000x updatesAfterReturn=1
+PASS visual-bot-late-join entity=93521 expected=1000x seen={"type":"compound","value":{"text":{"type":"string","value":""},"extra":{"type":"list","value":{"type":"compound","value":[{"text":{"type":"string","value":"Eme visible=true
+PASS persist-create hay=7777 stone=3000
+PASS persist-verify hay=7777/7777 stone=3000/3000 tracked=true
+paper-26.1.2: 38 passed, 0 failed

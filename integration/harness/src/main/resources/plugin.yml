@@ -1,0 +1,10 @@
+name: ItemStackerIT
+version: 1.0.0
+main: it.Harness
+api-version: 1.13
+folia-supported: true
+depend:
+  - ItemStacker
+commands:
+  itrun:
+    description: Runs an integration phase

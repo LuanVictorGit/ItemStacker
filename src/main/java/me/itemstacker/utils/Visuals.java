@@ -32,6 +32,16 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 public final class Visuals extends PacketListenerAbstract {
 
 	private static final Pattern HEX_PATTERN = Pattern.compile("&#([0-9a-fA-F]{6})");
+	private static final Pattern BUKKIT_HEX_PATTERN = Pattern.compile("[§&][xX]([§&][0-9a-fA-F]){6}");
+	private static final Pattern LEGACY_PATTERN = Pattern.compile("[§&]([0-9a-fk-orA-FK-OR])");
+	private static final java.util.Map<Character, String> LEGACY_TAGS = new java.util.HashMap<>();
+	static {
+		String codes = "0123456789abcdefklmnor";
+		String[] tags = { "<black>", "<dark_blue>", "<dark_green>", "<dark_aqua>", "<dark_red>", "<dark_purple>", "<gold>", "<gray>",
+				"<dark_gray>", "<blue>", "<green>", "<aqua>", "<red>", "<light_purple>", "<yellow>", "<white>",
+				"<obfuscated>", "<bold>", "<strikethrough>", "<underlined>", "<italic>", "<reset>" };
+		for (int i = 0; i < codes.length(); i++) LEGACY_TAGS.put(codes.charAt(i), tags[i]);
+	}
 
 	private final Manager manager;
 	private final ServerVersion version;
@@ -47,7 +57,15 @@ public final class Visuals extends PacketListenerAbstract {
 	}
 
 	static String prepareMiniMessage(String text) {
-		Matcher matcher = HEX_PATTERN.matcher(text);
+		// &#RRGGBB e o formato hex do Bukkit (§x§R§R§G§G§B§B, que getDisplayName() devolve para nomes em degradê)
+		Matcher bukkitHex = BUKKIT_HEX_PATTERN.matcher(text);
+		StringBuffer hex = new StringBuffer();
+		while (bukkitHex.find()) {
+			String digits = bukkitHex.group().replaceAll("[§&xX]", "");
+			bukkitHex.appendReplacement(hex, "<#" + digits + ">");
+		}
+		bukkitHex.appendTail(hex);
+		Matcher matcher = HEX_PATTERN.matcher(hex.toString());
 		StringBuffer sb = new StringBuffer();
 		while (matcher.find()) {
 			matcher.appendReplacement(sb, "<#" + matcher.group(1) + ">");
@@ -59,28 +77,15 @@ public final class Visuals extends PacketListenerAbstract {
 	static String toMiniMessageTags(String text) {
 		String s = prepareMiniMessage(text);
 		if (!s.contains("&") && !s.contains("§")) return s;
-		return s.replace("&0", "<black>").replace("§0", "<black>")
-				.replace("&1", "<dark_blue>").replace("§1", "<dark_blue>")
-				.replace("&2", "<dark_green>").replace("§2", "<dark_green>")
-				.replace("&3", "<dark_aqua>").replace("§3", "<dark_aqua>")
-				.replace("&4", "<dark_red>").replace("§4", "<dark_red>")
-				.replace("&5", "<dark_purple>").replace("§5", "<dark_purple>")
-				.replace("&6", "<gold>").replace("§6", "<gold>")
-				.replace("&7", "<gray>").replace("§7", "<gray>")
-				.replace("&8", "<dark_gray>").replace("§8", "<dark_gray>")
-				.replace("&9", "<blue>").replace("§9", "<blue>")
-				.replace("&a", "<green>").replace("§a", "<green>")
-				.replace("&b", "<aqua>").replace("§b", "<aqua>")
-				.replace("&c", "<red>").replace("§c", "<red>")
-				.replace("&d", "<light_purple>").replace("§d", "<light_purple>")
-				.replace("&e", "<yellow>").replace("§e", "<yellow>")
-				.replace("&f", "<white>").replace("§f", "<white>")
-				.replace("&k", "<obfuscated>").replace("§k", "<obfuscated>")
-				.replace("&l", "<bold>").replace("§l", "<bold>")
-				.replace("&m", "<strikethrough>").replace("§m", "<strikethrough>")
-				.replace("&n", "<underlined>").replace("§n", "<underlined>")
-				.replace("&o", "<italic>").replace("§o", "<italic>")
-				.replace("&r", "<reset>").replace("§r", "<reset>");
+		Matcher matcher = LEGACY_PATTERN.matcher(s);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			String tag = LEGACY_TAGS.get(Character.toLowerCase(matcher.group(1).charAt(0)));
+			matcher.appendReplacement(sb, Matcher.quoteReplacement(tag == null ? matcher.group() : tag));
+		}
+		matcher.appendTail(sb);
+		// qualquer § que sobrar faria o MiniMessage falhar e mostrar as tags cruas
+		return sb.toString().replace("§", "");
 	}
 
 	static Object name(ServerVersion version, String text) {

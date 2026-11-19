@@ -464,7 +464,9 @@ public final class Manager {
 			long seconds = lived < 0 ? 0 : Math.max(0, platform.despawnRate(bucket.world) - lived) / 20;
 			if (group.lastSeconds != seconds) {
 				group.lastSeconds = seconds;
-				if (group.shown >= 0) group.dirty = true;
+				// new drops start with shown == -1 (name only set by the spawn packet), so the
+				// countdown must mark them dirty too, otherwise the timer freezes at its first value
+				group.dirty = true;
 			}
 		}
 		return true;

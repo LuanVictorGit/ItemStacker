@@ -79,7 +79,7 @@ public final class Manager {
 	private final LongAdder merged = new LongAdder(), absorbed = new LongAdder(), picked = new LongAdder(), sucked = new LongAdder(), pushes = new LongAdder(), runs = new LongAdder();
 	private final AtomicLong nanos = new AtomicLong(), worst = new AtomicLong(), lastError = new AtomicLong();
 	private final long origin = System.nanoTime();
-	private volatile long nextRescan, nextSave;
+	private volatile long nextRescan, nextSave, nextTimer;
 	private volatile boolean overflow;
 
 	public Manager(Core plugin, ConfigManager cfg, Platform platform, Store store) {
@@ -165,6 +165,7 @@ public final class Manager {
 			int budget = drain(visualQueue, true, now, cfg.budget);
 			drain(mergeQueue, false, now, Math.max(budget, cfg.budget / 4));
 			if (overflow && queued.get() < cfg.queueLimit) retry();
+			if (cfg.timerActive && now >= nextTimer) countdown(now);
 			if (cfg.rescan > 0 && now >= nextRescan) rescan(now);
 			if (now >= nextSave) {
 				nextSave = now + cfg.save * 1000L;
@@ -205,6 +206,11 @@ public final class Manager {
 				if (bucket.wantVisual) enqueueVisual(bucket);
 			}
 		}
+	}
+
+	private void countdown(long now) {
+		nextTimer = now + 1000L;
+		for (ConcurrentHashMap<Long, Bucket> map : worlds.values()) for (Bucket bucket : map.values()) if (bucket.count > 0) enqueueVisual(bucket);
 	}
 
 	private void rescan(long now) {

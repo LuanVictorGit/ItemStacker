@@ -84,7 +84,6 @@ public final class Visuals extends PacketListenerAbstract {
 			matcher.appendReplacement(sb, Matcher.quoteReplacement(tag == null ? matcher.group() : tag));
 		}
 		matcher.appendTail(sb);
-		// qualquer § que sobrar faria o MiniMessage falhar e mostrar as tags cruas
 		return sb.toString().replace("§", "");
 	}
 
